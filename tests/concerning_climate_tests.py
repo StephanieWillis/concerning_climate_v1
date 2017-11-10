@@ -41,3 +41,10 @@ def test_plot_area_sectors():
     """Produces a sample stacked plot"""
     plot_area_sectors_trial = Historic_Emissions("Area sectors chart trial")
     plot_area_sectors_trial.plot_area_sectors('Canada')
+
+def test_plot_area_countries():
+    """Produces a sample stacked plot"""
+    countries = countries = ['Canada', 'United States of America (the)', 'Australia', 'China', 'United Kingdom of Great Britain and Northern Ireland (the)']
+    plot_area_countries_trial = Historic_Emissions("Area countries chart trial")
+    plot_area_countries_trial.plot_area_countries(countries)
+    plot_area_countries_trial.plot_area_countries(countries, 'Buildings', 2000) 

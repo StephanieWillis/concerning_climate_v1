@@ -53,12 +53,17 @@ class Historic_Emissions(object):
 
     def countries_reminder(self):
         #would be nicer to make a search function but this will do for now
-        countries = set(self.df_edgar_co2_Gt.index.get_level_values(0))
+        countries = sorted(set(self.df_edgar_co2_Gt.index.get_level_values(0)))
         return countries
 
-    def hist_table(self, countries, years, sectors):
+    def countries_search(self):
+        """takes input country and finds full name in the list.
+        Thus allows user to get name a bit wrong and it can still work"""
+        pass
+
+    def hist_table(self, countries = 'all', years = 'all', sectors = 'all'):
         """Input the countries, years and sector you want data for
-        If you want all years, countries or sectors enter 'all' as that arg"""
+        If you want all years, countries or sectors enter can leave argument blank or input 'all'"""
 
         All = slice(None)
 
@@ -107,7 +112,7 @@ class Historic_Emissions(object):
 
         plt.show()
 
-    def plot_area_sectors(self, country, year_start = 1970, year_end = 2016, sectors_off = False):
+    def plot_area_sectors(self, country, year_start = 1970, year_end = 2017, sectors_off = False):
         """plot how emisisons have changed over the statedtime period.
         If sectors_on is true then include sector breakdown"""
 
@@ -126,8 +131,8 @@ class Historic_Emissions(object):
         plt.title(title)
         plt.legend()
         plt.xlabel('\nYear')
-        plt.ylabel('Annual $\mathregular{CO_{2}}$ Emissions \n(Gigatonnes of $\mathregular{CO_{2}}$ per year)')
-        plt.xlim(year_start, year_end) #this doesn't work at the moment because the years are strings. This is going to be a consistent problem so lets sort it out
+        plt.ylabel('Annual $\mathregular{CO_{2}}$ Emissions \n(Gigatonnes of $\mathregular{CO_{2}}$)')
+        plt.xlim(year_start, year_end-1) #this doesn't work at the moment because the years are strings. This is going to be a consistent problem so lets sort it out
         plt.show()
 
         #(df_area_sectors.iloc[1:len(rows)].T.plot.area())
@@ -135,10 +140,18 @@ class Historic_Emissions(object):
         #plt.show()
 
 
-    def plot_area_countries(self, countries, year_start, year_end):
+    def plot_area_countries(self, countries, sector = 'All sectors', year_start = 1970, year_end = 2017):
         """plot evolution of emissions in listed countries over
-         the stated time period"""
+         the stated time period. Can be for all sectors or can choose 1 single sector"""
 
-         #could combine this with above cuntion and just check length of country
-         #perhaps not though because you might want to compare performance in a certain sector
-        pass
+        years = list(range(year_start,year_end))
+
+        df_area_countries = self.hist_table(countries, years, [sector]).xs(sector, level = 1)
+        df_area_countries.T.plot.area()
+        title = r'Evolution of $CO_2$ emissions from {} .'.format(sector)
+        plt.title(title)
+        plt.legend()
+        plt.xlabel('\nYear')
+        plt.ylabel('Annual $\mathregular{CO_{2}}$ Emissions \n(Gigatonnes of $\mathregular{CO_{2}}$)')
+        plt.xlim(year_start, year_end-1) #this doesn't work at the moment because the years are strings. This is going to be a consistent problem so lets sort it out
+        plt.show()
