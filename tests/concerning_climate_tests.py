@@ -1,45 +1,43 @@
 from nose.tools import *
-from concerning_climate.world_emissions import Emissions
+from concerning_climate.historic_emissions import Historic_Emissions
+import random
+import numpy.testing as npt
+#from concerning_climate.scenario_emissions import Scenario_Emissions
+
+def test_countries_reminder():
+    countries_reminder_trial = Historic_Emissions("Countries reminder trial")
+    countries = countries_reminder_trial.countries_reminder()
+    print(countries)
+
+def test_hist_table():
+    #check that a variety of arguments works
+    table_trial = Historic_Emissions("Table trial")
+    table_trial.hist_table(['Somalia'], [1991], ['Transport'])
+    table_trial.hist_table(['Somalia', 'Algeria'], [1991, 1993, 1995], ['Transport', 'Buildings'])
+    table_trial.hist_table('all', [1991, 1993, 1995], ['Transport'])
+    table_trial.hist_table(['Somalia', 'Algeria'], 'all', 'Transport')
+    table_trial.hist_table(['Somalia', 'Algeria'], [1991, 1993, 1995], 'all')
+    table_trial.hist_table('all', [1991, 1993, 1995], 'all')
+    table_trial.hist_table(['Somalia', 'Algeria'], 'all', 'all')
+    table_trial.hist_table('all', 'all', 'Transport')
+    table_trial.hist_table('all', 'all', 'All')
+
+    #check the suming of the sectors gives the expected output
+    df_canada = table_trial.hist_table(['Canada'], 'all', 'all')
+    result = df_canada.loc[(['Canada'], ['Non-combustion', 'Transport',
+                             'Other industrial combustion', 'Power Industry',
+                              'Buildings']), slice(None)].sum(axis = 0)
 
 
-def test_emissions_year():
-    print('Running emisisons year look up test')
-    emissions_trial = Emissions("Emissions trial")
-    years = [ str(year) for year in range(1970,2016)]
-    #ideally put an assert equal in here but tricky currently so resort to printing.
-    year_trial.emissions_years('2016')
-    year_trial.emissions_years(years)
+    year = random.randint(1970, 2016)
+    npt.assert_almost_equal(result[year], df_canada.loc[(['Canada'], ['All sectors']), slice(None)][year].item(), decimal = 5)
 
-def test_emissions_countries():
-    print('Running emissons country look up test')
-    countries_trial = Emissions("Emissions trial")
-    countries_trial.emissions_countries('Afghanistan')
-    countries_trial.emissions_countries(['Afghanistan', 'Brazil', 'Zimbabwe', 'Canada'])
+def test_plot_pie():
+    """Produces a sample pie chart"""
+    plot_pie_trial = Historic_Emissions("Pie chart trial")
+    plot_pie_trial.plot_pie('Bulgaria', 2016)
 
-def test_emissions_sector():
-    print('Running emissons sector look up test')
-    #all possible sectors tested here
-    sector_trial = Emissions("Emissions trial")
-    sectors = ['Transport','Other industrial combustion', 'Buildings',
-               'Non-combustion', 'Power Industry']
-    for sector in sectors:
-        sector_trial.emissions_sector(sector)
-
-def test_emissions_countries_sector():
-    print('Running emissons sectora and country look up test')
-    sector_trial = Emissions("Emissions trial")
-    sector_trial.emissions_countries_sector(['Somalia', 'Algeria'], 'Transport')
-
-
-def test_emissions_table():
-    print('Running emissons sector look up test')
-    table_trial = Emissions("Emissions trial")
-    table_trial.emissions_table(['Somalia'], ['1991'], 'Transport')
-    table_trial.emissions_table(['Somalia', 'Algeria'], ['1991', '1993', '1995'], 'Transport')
-    table_trial.emissions_table('all', ['1991', '1993', '1995'], 'Transport')
-    table_trial.emissions_table(['Somalia', 'Algeria'], :, 'Transport')
-    table_trial.emissions_table(['Somalia', 'Algeria'], ['1991', '1993', '1995'], 'all')
-    table_trial.emissions_table('all', ['1991', '1993', '1995'], 'all')
-    table_trial.emissions_table(['Somalia', 'Algeria'], :, 'all')
-    table_trial.emissions_table('all', :, 'Transport')
-    table_trial.emissions_table('all', :, 'all')
+def test_plot_area_sectors():
+    """Produces a sample stacked plot"""
+    plot_area_sectors_trial = Historic_Emissions("Area sectors chart trial")
+    plot_area_sectors_trial.plot_area_sectors('Canada')
